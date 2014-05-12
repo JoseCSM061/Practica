@@ -33,14 +33,14 @@
                     if (id !== "") {
                         $.ajax({
                             type: "POST",
-                           url:"http://jocasama.260mb.net/Practica/consultarID.php",
-                            //url: "consultarID.php",
+                          url:"http://jocasama.260mb.net/Practica/consultarID.php",
+                           //url: "consultarID.php",
                             data: "ID=" + id,
                             success: onSuccessID
                         });
                         function onSuccessID(data) {
                             if (data === 'valido') {
-                                window.location = 'index.html#modificar';
+                                window.location = '#modificar';
                             } else if (data === 'falso') {
                                 alert('ID invalido');
                             }
@@ -64,15 +64,15 @@
                             if (data1 === 'valido') {
                                 $.ajax({
                                     type: "POST",
-                                   url: "http://jocasama.260mb.net/Practica/eliminar.php",
-                                   //url:"eliminar.php",
+                                 url: "http://jocasama.260mb.net/Practica/eliminar.php",
+                                 // url:"eliminar.php",
                                     data: "IDE=" + id,
                                     success: onSuccessID4
                                 });
                                 function onSuccessID4(data1) {
                                     if (data1) {
                                         consultar();
-                                        window.location = 'index.html'
+                                        window.location = 'index.html';
                                     }
                                 }
                             }
@@ -130,7 +130,7 @@
                 $.ajax({
                     type: "POST",
                     url:"http://jocasama.260mb.net/Practica/consulta.php",
-                    //url: "consulta.php",
+                   // url: "consulta.php",
                     dataType: "json",
                     success: onSuccess1
                 });
