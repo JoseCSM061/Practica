@@ -1,0 +1,234 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Aplic. Web de jQuery Mobile</title>
+        <link rel="stylesheet" href="css/jquery.mobile-1.4.2.min.css">
+        <link rel="stylesheet" href="css/jqm-demos.css">
+        <script src="phonegap.js"></script>
+        <script src="js/jquery.js"></script>
+        <script src="js/index.js"></script>
+        <script src="js/jquery.mobile-1.4.2.min.js"></script>
+        <script type="text/javascript">
+
+            document.addEventListener("deviceready", function() {
+                consultar();
+                
+                var boton = $("#guardar");
+                boton.tap(function() {
+                    var marc = $("#marca").val();
+                    var mod = $("#modelo").val();
+                    var col = $("#color").val();
+                    var prec = $("#precio").val();
+                    if (marc !== "" && mod !== "" && col !== "" && prec !== "") {
+                        enviar(marc, mod, col, prec);
+                    } else {
+                        alert("Favor de registrar datos en los campos");
+                    }
+                });
+
+                var boton3 = $("#mod");
+                boton3.tap(function() {
+                    var id = $("#id").val();
+                    if (id !== "") {
+                        $.ajax({
+                            type: "POST",
+                           url:"http://jocasama.260mb.net/Practica/consultarID.php",
+                            //url: "consultarID.php",
+                            data: "ID=" + id,
+                            success: onSuccessID
+                        });
+                        function onSuccessID(data) {
+                            if (data === 'valido') {
+                                window.location = 'index.html#modificar';
+                            } else if (data === 'falso') {
+                                alert('ID invalido');
+                            }
+                        }
+                    } else {
+                        alert("Inserte el valor del ID");
+                    }
+                });
+                var boton2 = $("#eli");
+                boton2.tap(function() {
+                    var id = $("#id").val();
+                    if (id !== "") {
+                        $.ajax({
+                            type: "POST",
+                            url:"http://jocasama.260mb.net/Practica/consultarID.php",
+                            //url: "consultarID.php",
+                            data: "ID=" + id,
+                            success: onSuccessID1
+                        });
+                        function onSuccessID1(data1) {
+                            if (data1 === 'valido') {
+                                $.ajax({
+                                    type: "POST",
+                                   url: "http://jocasama.260mb.net/Practica/eliminar.php",
+                                   //url:"eliminar.php",
+                                    data: "IDE=" + id,
+                                    success: onSuccessID4
+                                });
+                                function onSuccessID4(data1) {
+                                    if (data1) {
+                                        consultar();
+                                        window.location = 'index.html'
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        alert("Inserte el valor del ID");
+                    }
+                });
+
+                var boton1 = $("#guardarN");
+                boton1.tap(function() {
+                    var marN = $("#marcaN").val();
+                    var modN = $("#modeloN").val();
+                    var colN = $("#colorN").val();
+                    var preN = $("#precioN").val();
+                    if (marN !== "" && modN !== "" && colN !== "" && preN !== "") {
+                        actualizar(marN, modN, colN, preN);
+                    } else {
+                        alert('Favor de llenar todos los campos');
+                    }
+                });
+            });
+            function vaciar(){
+                $("#id").val="";
+                $("#marca").val="";
+                $("#modelo").val="";
+                $("#color").val="";
+                $("#precio").val="";
+                $("#marcaN").val="";
+                $("#modeloN").val="";
+                $("#colorN").val="";
+                $("#precioN").val="";
+            }
+            
+            function actualizar(marN, modN, colN, preN) {
+                var id = $("#id").val();
+                $.ajax({
+                    type: "POST",
+                    url:"http://jocasama.260mb.net/Practica/modificar.php",
+                    //url: "modificar.php",
+                    data: "ID=" + id + "&Marca=" + marN + "&Modelo=" + modN + "&Color=" + colN + "&Precio=" + preN,
+                    success: onSuccessID2
+                });
+                function onSuccessID2(data1) {
+                    if (data1 === 'valido') {
+                        alert('Modificacion correcta');
+                        consultar();
+                    } else {
+                        alert('Error: ' + data1);
+                    }
+                }
+            }
+
+            function consultar() {
+                $.ajax({
+                    type: "POST",
+                    url:"http://jocasama.260mb.net/Practica/consulta.php",
+                    //url: "consulta.php",
+                    dataType: "json",
+                    success: onSuccess1
+                });
+                function onSuccess1(data) {
+                    var html;
+                    html = "<h4>Se encontraron [" + data.length + "] registro(s)</h4>";
+                    html += '<table data-role="table" id="movie-table" class="ui-responsive">';
+                    html += "<thead>";
+                    html += "<tr>";
+                    html += "<th>Id</th>";
+                    html += "<th>Marca</th>";
+                    html += "<th>Modelo</th>";
+                    html += "<th>Color</th>";
+                    html += "<th>Precio</th>";
+                    html += "</tr>";
+                    html += "</thead>";
+                    for (var contador = 0; contador < data.length; contador++)
+                    {
+                        html += "<tr>";
+                        html += "<td>" + data[contador].id_auto + "</td>";
+                        html += "<td>" + data[contador].Marca + "</td>";
+                        html += "<td>" + data[contador].Modelo + "</td>";
+                        html += "<td>" + data[contador].Color + "</td>";
+                        html += "<td>" + data[contador].Precio + "</td>";
+                        html += "</tr>";
+                    }
+                    html += "</table>";
+                    $("#res").html(html);
+                }
+            }
+
+            function enviar(marc, mod, col, prec) {
+                $.ajax({
+                    type: "POST",
+                    url: "http://jocasama.260mb.net/Practica/procesar.php",
+                    //url: "procesar.php",
+                    data: "Marca=" + marc + "&Modelo=" + mod + "&Color=" + col + "&Precio=" + prec,
+                    success: onSuccess
+                });
+                function onSuccess(data) {
+                    consultar();
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div data-role="page" id="principal">
+            <div data-role="header">
+                <p>Principal</p>
+            </div>
+            <div data-role="content">
+                <h4>Edicion y eliminacion</h4>
+                <input type="text" id="id" placeholder="ID" />
+                <a href="#" data-role="button" id="mod">Modificar</a>
+                <a href="#" data-role="button" id="eli">Eliminar</a>
+                <a href="#captura" data-role="button" >Capturar</a> 
+                <div id="res"></div>
+            </div>
+            <div data-role="footer">
+                <p>Menu principal</p>
+            </div>
+        </div>
+
+        <div data-role="page" id="captura">
+            <div data-role="header">
+                <p>Registro</p>
+            </div>
+            <div data-role="content">
+                <ul data-role="listview">
+                    <li><input type="text" id="marca" placeholder="Marca" /></li>
+                    <li><input type="text" id="modelo" placeholder="Modelo" /></li>
+                    <li><input type="text" id="color" placeholder="Color" /></li>       
+                    <li><input type="text" id="precio" placeholder="Precio" /></li>               
+                </ul>
+            </div>
+            <div data-role="footer">
+                <a href="#principal" data-role="button" id="guardar" >Guardar</a>
+                <a href="#principal" data-role="button" >Menú Principal</a>
+            </div>
+        </div>
+
+        <div data-role="page" id="modificar">
+            <div data-role="header">
+                <p>Modificar</p>
+            </div>
+            <div data-role="content">
+                <h4>Nuevos datos</h4>
+                <ul data-role="listview">
+                    <li><input type="text" id="marcaN" placeholder="Marca" /></li>
+                    <li><input type="text" id="modeloN" placeholder="Modelo" /></li>
+                    <li><input type="text" id="colorN" placeholder="Color" /></li>       
+                    <li><input type="text" id="precioN" placeholder="Precio" /></li>               
+                </ul>                           
+            </div>
+            <div data-role="footer">   
+                <a href="#" data-role="button" id="guardarN" >Guardar</a>
+                <a href="#principal" data-role="button" id="back">Menú Principal</a>
+            </div>
+        </div>
+    </body>
+</html>
